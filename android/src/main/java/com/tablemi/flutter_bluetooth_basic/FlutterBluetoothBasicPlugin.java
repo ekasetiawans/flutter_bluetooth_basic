@@ -1,7 +1,6 @@
 package com.tablemi.flutter_bluetooth_basic;
 
 import android.Manifest;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -41,7 +40,7 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
   private static final int REQUEST_COARSE_LOCATION_PERMISSIONS = 1451;
   private static final String NAMESPACE = "flutter_bluetooth_basic";
   private final Registrar registrar;
-  private final Activity activity;
+  private final Context context;
   private final MethodChannel channel;
   private final EventChannel stateChannel;
   private final BluetoothManager mBluetoothManager;
@@ -57,10 +56,10 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
 
   FlutterBluetoothBasicPlugin(Registrar r){
     this.registrar = r;
-    this.activity = r.activity();
+    this.context = r.context();
     this.channel = new MethodChannel(registrar.messenger(), NAMESPACE + "/methods");
     this.stateChannel = new EventChannel(registrar.messenger(), NAMESPACE + "/state");
-    this.mBluetoothManager = (BluetoothManager) registrar.activity().getSystemService(Context.BLUETOOTH_SERVICE);
+    this.mBluetoothManager = (BluetoothManager) registrar.context().getSystemService(Context.BLUETOOTH_SERVICE);
     this.mBluetoothAdapter = mBluetoothManager.getAdapter();
     channel.setMethodCallHandler(this);
     stateChannel.setStreamHandler(stateStreamHandler);
@@ -89,10 +88,10 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
         result.success(threadPool != null);
         break;
       case "startScan": {
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
           ActivityCompat.requestPermissions(
-                  activity,
+                  context,
                   new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
                   REQUEST_COARSE_LOCATION_PERMISSIONS);
           pendingCall = call;
@@ -180,7 +179,7 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
     ret.put("name", device.getName());
     ret.put("type", device.getType());
 
-    activity.runOnUiThread(
+    context.runOnUiThread(
             new Runnable() {
               @Override
               public void run() {
@@ -330,13 +329,13 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
       filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
       filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
       filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-      activity.registerReceiver(mReceiver, filter);
+      context.registerReceiver(mReceiver, filter);
     }
 
     @Override
     public void onCancel(Object o) {
       sink = null;
-      activity.unregisterReceiver(mReceiver);
+      context.unregisterReceiver(mReceiver);
     }
   };
 

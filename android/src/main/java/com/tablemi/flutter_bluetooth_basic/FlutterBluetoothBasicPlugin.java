@@ -89,16 +89,16 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
         result.success(threadPool != null);
         break;
       case "startScan": {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-          ActivityCompat.requestPermissions(
-                  context,
-                  new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
-                  REQUEST_COARSE_LOCATION_PERMISSIONS);
-          pendingCall = call;
-          pendingResult = result;
-          break;
-        }
+//        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//          ActivityCompat.requestPermissions(
+//                  context,
+//                  new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
+//                  REQUEST_COARSE_LOCATION_PERMISSIONS);
+//          pendingCall = call;
+//          pendingResult = result;
+//          break;
+//        }
         startScan(call, result);
         break;
       }

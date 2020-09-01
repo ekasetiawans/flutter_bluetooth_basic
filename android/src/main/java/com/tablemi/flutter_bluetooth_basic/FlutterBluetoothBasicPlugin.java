@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -179,13 +180,12 @@ public class FlutterBluetoothBasicPlugin implements MethodCallHandler, RequestPe
     ret.put("name", device.getName());
     ret.put("type", device.getType());
 
-    context.runOnUiThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                channel.invokeMethod(name, ret);
-              }
-            });
+    new Handler(context.getMainLooper()).post(new Runnable() {
+      @Override
+      public void run() {
+        channel.invokeMethod(name, ret);
+      }
+    });
   }
 
   private ScanCallback mScanCallback = new ScanCallback() {
